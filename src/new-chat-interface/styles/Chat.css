@@ -1,0 +1,276 @@
+/**
+ * Elite Chat Interface - Base Styles
+ * A professional, elegant, and minimalist chat interface with light/dark mode support
+ */
+
+/* Base CSS Variables for light mode */
+:root {
+  /* Color scheme */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f7fa;
+  --color-bg-tertiary: #edf2f7;
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #718096;
+  --color-accent-primary: #4c6ef5;
+  --color-accent-secondary: #3b5bdb;
+  --color-accent-hover: #364fc7;
+  --color-border: #e2e8f0;
+  --color-shadow: rgba(0, 0, 0, 0.05);
+  
+  /* Message colors */
+  --color-user-bubble: #4c6ef5;
+  --color-user-text: #ffffff;
+  --color-assistant-bubble: #f8fafc;
+  --color-assistant-text: #1a202c;
+  --color-error: #e53e3e;
+  --color-success: #38a169;
+  --color-warning: #dd6b20;
+  --color-info: #3182ce;
+  
+  /* Sizing and spacing */
+  --chat-border-radius: 14px;
+  --button-border-radius: 8px;
+  --message-spacing: 0.75rem;
+  --container-padding: 1rem;
+  --avatar-size: 36px;
+  
+  /* Typography */
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                  "Helvetica Neue", Arial, sans-serif;
+  --font-size-small: 0.75rem;
+  --font-size-regular: 0.875rem;
+  --font-size-medium: 1rem;
+  --font-size-large: 1.125rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  
+  /* Effects */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --shadow-sm: 0 1px 2px var(--color-shadow);
+  --shadow-md: 0 4px 6px var(--color-shadow);
+  --shadow-lg: 0 10px 15px -3px var(--color-shadow);
+  
+  /* Z-index stack */
+  --z-index-toast: 1000;
+  --z-index-dropdown: 100;
+  --z-index-header: 10;
+}
+
+/* Dark mode variables */
+:root.dark {
+  --color-bg-primary: #171923;
+  --color-bg-secondary: #1a202c;
+  --color-bg-tertiary: #2d3748;
+  --color-text-primary: #f7fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-text-tertiary: #a0aec0;
+  --color-accent-primary: #5a67d8;
+  --color-accent-secondary: #4c51bf;
+  --color-accent-hover: #6675e0;
+  --color-border: #2d3748;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Message colors in dark mode */
+  --color-user-bubble: #5a67d8;
+  --color-user-text: #ffffff;
+  --color-assistant-bubble: #2d3748;
+  --color-assistant-text: #f7fafc;
+  --color-error: #fc8181;
+  --color-success: #68d391;
+  --color-warning: #f6ad55;
+  --color-info: #63b3ed;
+}
+
+/* Support both class-based and attribute-based themes for compatibility */
+[data-theme="dark"] {
+  --color-bg-primary: #171923;
+  --color-bg-secondary: #1a202c;
+  --color-bg-tertiary: #2d3748;
+  --color-text-primary: #f7fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-text-tertiary: #a0aec0;
+  --color-accent-primary: #5a67d8;
+  --color-accent-secondary: #4c51bf;
+  --color-accent-hover: #6675e0;
+  --color-border: #2d3748;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Message colors in dark mode */
+  --color-user-bubble: #5a67d8;
+  --color-user-text: #ffffff;
+  --color-assistant-bubble: #2d3748;
+  --color-assistant-text: #f7fafc;
+  --color-error: #fc8181;
+  --color-success: #68d391;
+  --color-warning: #f6ad55;
+  --color-info: #63b3ed;
+}
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Main chat container */
+.elite-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem var(--container-padding);
+  background-color: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-header);
+  transition: background-color var(--transition-normal);
+  height: 60px;
+}
+
+.chat-header h1 {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.action-button:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+.action-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Main content area */
+.chat-main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Footer */
+.chat-footer {
+  padding: 1rem var(--container-padding);
+  background-color: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border);
+  transition: background-color var(--transition-normal);
+}
+
+/* Toast notification */
+.toast-notification {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-index-toast);
+  animation: toast-fade-in 0.3s ease forwards;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.toast-content svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-success);
+  margin-right: 0.5rem;
+}
+
+/* Animations */
+@keyframes toast-fade-in {
+  from { 
+    opacity: 0;
+    transform: translate(-50%, 1rem);
+  }
+  to { 
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .elite-chat-container {
+    height: 100dvh;
+  }
+  
+  .chat-header {
+    padding: 0.75rem;
+  }
+  
+  .chat-footer {
+    padding: 0.75rem;
+  }
+}
+
+/* High contrast / accessibility */
+@media (prefers-contrast: high) {
+  :root, .dark {
+    --color-border: #000000;
+    --color-user-bubble: #1a4d7c;
+    --color-assistant-bubble: #f0f0f0;
+    --color-user-text: #ffffff;
+    --color-assistant-text: #000000;
+  }
+  
+  .action-button {
+    border: 1px solid currentColor;
+  }
+}
