@@ -14,6 +14,8 @@ const FAQPage = lazy(() => import('./pages/FAQPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const ModernChatPage = lazy(() => import('./pages/ModernChatPage'));
+const ImprovedChatDemo = lazy(() => import('./pages/ImprovedChatDemo'));
+const ThemeTestPage = lazy(() => import('./pages/ThemeTestPage'));
 
 // Prefetch components
 const prefetchComponent = (importFn) => {
@@ -85,6 +87,15 @@ function App() {
     const root = document.documentElement;
     root.setAttribute('data-theme', state.theme);
     root.setAttribute('data-mobile', state.manualMobileToggle || state.isMobile);
+    
+    // Add/remove class for theme to support CSS selectors in unified-chat.css
+    if (state.theme === 'light') {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    } else {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    }
     
     // Force a repaint to ensure theme changes are applied immediately
     root.style.display = 'none';
@@ -234,6 +245,16 @@ function App() {
               <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Coming Soon</h1>
               </div>
+            } />
+            <Route path="/improved-chat" element={
+              <Suspense fallback={<LoadingScreen />}>
+                <ImprovedChatDemo />
+              </Suspense>
+            } />
+            <Route path="/theme-test" element={
+              <Suspense fallback={<LoadingScreen />}>
+                <ThemeTestPage />
+              </Suspense>
             } />
           </Routes>
           {state.isMobile && (

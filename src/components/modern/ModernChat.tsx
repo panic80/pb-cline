@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ModernChatWindow from './ModernChatWindow';
+import ImprovedChatWindow from './ImprovedChatWindow';
 import ModernChatInput from './ModernChatInput';
 import { sendToGemini } from '../../api/gemini';
 import { fetchTravelInstructions } from '../../api/travelInstructions';
-import '../../styles/modern-chat.css';
+import { generateMessageId, formatMessageTime, formatDate } from '../../utils/chatUtils';
+import '../../styles/unified-chat.css';
 
 // Icons
 const BackIcon = () => (
@@ -68,6 +69,9 @@ export interface Message {
 const ModernChat: React.FC = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [userHasScrolled, setUserHasScrolled] = useState(false);
+  const [networkError, setNetworkError] = useState<string | null>(null);
 
   // State management
   const [messages, setMessages] = useState<Message[]>([]);
@@ -79,6 +83,10 @@ const ModernChat: React.FC = () => {
   const [theme, setTheme] = useState<string>(() => {
     return localStorage.getItem('theme') ||
       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  });
+  const [fontSize, setFontSize] = useState<number>(() => {
+    const savedFontSize = localStorage.getItem('chatFontSize');
+    return savedFontSize ? parseInt(savedFontSize, 10) : 16;
   });
   const [showAvatars, setShowAvatars] = useState<boolean>(true);
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -96,13 +104,15 @@ const ModernChat: React.FC = () => {
         console.error('Failed to load travel instructions:', error);
       }
     };
-    
     loadInstructions();
   }, []);
 
   // Apply theme class to document
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.classList.remove('dark', 'light');
+    document.body.classList.remove('dark', 'light');
+    document.documentElement.classList.add(theme);
+    document.body.classList.add(theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
@@ -125,38 +135,53 @@ const ModernChat: React.FC = () => {
 
   // Handle scroll events to show/hide scroll-to-bottom button
   useEffect(() => {
-    const container = messagesEndRef.current?.parentElement;
+    const container = messagesContainerRef.current;
     if (!container) return;
-    
+
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 100;
-      setShowScrollButton(isScrolledUp && messages.length > 0);
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 150;
+      
+      setShowScrollButton(!isNearBottom && messages.length > 0);
+      if (isScrolledUp) {
+        setUserHasScrolled(true);
+      } else if (isNearBottom) {
+        setUserHasScrolled(false);
+      }
     };
     
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [messages.length]);
 
-  // Toggle theme function
+  // Auto-scroll for new messages but respect user scroll position
+  useEffect(() => {
+    if (messages.length > 0 && !userHasScrolled) {
+      scrollToBottom('smooth');
+    }
+  }, [messages, userHasScrolled]);
+
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  // Generate unique ID for messages
-  const generateMessageId = () => {
-    return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  // Enhanced scroll to bottom with behavior option
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior });
+      // Reset user scroll state when explicitly scrolling to bottom
+      if (behavior === 'smooth') {
+        setTimeout(() => setUserHasScrolled(false), 100);
+      } else {
+        setUserHasScrolled(false);
+      }
+    }
   };
 
-  // Scroll to bottom function
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Send message handler
+  // Enhanced message sending with better error handling
   const handleSend = async () => {
     if (input.trim()) {
-      // Create and add user message
       const userMessage: Message = {
         id: generateMessageId(),
         sender: 'user',
@@ -164,22 +189,16 @@ const ModernChat: React.FC = () => {
         timestamp: Date.now(),
         status: 'sent'
       };
-      
       setMessages(prev => [...prev, userMessage]);
       setInput("");
       setIsTyping(false);
       setIsLoading(true);
-      
-      // Scroll to bottom after sending message
-      setTimeout(scrollToBottom, 100);
+      setNetworkError(null);
+      scrollToBottom('auto'); // Instant scroll when sending
       
       try {
-        // Send message to Gemini API if travel instructions are loaded
         if (travelInstructions) {
-          // Type assertion to handle the TypeScript error
           const response = await sendToGemini(input, isSimplifyMode, 'models/gemini-2.0-flash-001', travelInstructions as any);
-          
-          // Create bot message with response
           const botMessage: Message = {
             id: generateMessageId(),
             sender: 'bot',
@@ -189,28 +208,33 @@ const ModernChat: React.FC = () => {
             simplified: isSimplifyMode,
             status: 'delivered'
           };
-          
           setMessages(prev => [...prev, botMessage]);
-          setTimeout(scrollToBottom, 100);
+          
+          // Update user message status to delivered
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === userMessage.id ? {...msg, status: 'delivered'} : msg
+            )
+          );
         } else {
-          // Fallback if travel instructions aren't loaded
-          setTimeout(() => {
-            const fallbackMessage: Message = {
-              id: generateMessageId(),
-              sender: 'bot',
-              text: "I'm sorry, I couldn't access the travel instructions. Please try again later.",
-              timestamp: Date.now(),
-              status: 'error'
-            };
-            
-            setMessages(prev => [...prev, fallbackMessage]);
-            setTimeout(scrollToBottom, 100);
-          }, 1000);
+          throw new Error("No travel instructions available");
         }
       } catch (error) {
         console.error('Error sending message to Gemini:', error);
+        // Update the error state with user-friendly message
+        setNetworkError(
+          error instanceof Error && error.message === "No travel instructions available" 
+            ? "I couldn't access the travel instructions. Please try again."
+            : "Network error. Please check your connection and try again."
+        );
         
-        // Add error message
+        // Update user message status to error
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === userMessage.id ? {...msg, status: 'error'} : msg
+          )
+        );
+        
         const errorMessage: Message = {
           id: generateMessageId(),
           sender: 'bot',
@@ -218,27 +242,22 @@ const ModernChat: React.FC = () => {
           timestamp: Date.now(),
           status: 'error'
         };
-        
         setMessages(prev => [...prev, errorMessage]);
-        setTimeout(scrollToBottom, 100);
       } finally {
         setIsLoading(false);
       }
     }
   };
 
-  // Clear chat history
   const clearChat = () => {
     setMessages([]);
     setConversationStarted(false);
   };
 
-  // Typing indicator handler
   const onTyping = (value: string) => {
     setIsTyping(value.length > 0);
   };
 
-  // Handle copy message
   const handleCopyMessage = (text: string) => {
     navigator.clipboard.writeText(text)
       .then(() => {
@@ -252,120 +271,108 @@ const ModernChat: React.FC = () => {
       });
   };
 
-  // Handle share message
   const handleShareMessage = (message: Message) => {
-    // In a real app, this would open a share dialog
     setToastMessage("Share functionality coming soon");
     setShowToast(true);
   };
 
-  // Handle suggested question selection
   const handleSelectQuestion = (question: string) => {
     setInput(question);
-    // Optional: Auto-send the question
-    // setTimeout(() => handleSend(), 500);
+  };
+
+  const handleFontSizeChange = (newSize: number) => {
+    setFontSize(newSize);
+    localStorage.setItem('chatFontSize', newSize.toString());
   };
 
   return (
     <div className="modern-chat">
-      {/* Header */}
+      {/* Fixed Header */}
       <header className="modern-chat-header">
         <div className="header-title">
-          <button
-            onClick={() => navigate(-1)}
-            className="icon-button"
-            aria-label="Go back"
-          >
+          <button onClick={() => navigate(-1)} className="icon-button" aria-label="Go back">
             <BackIcon />
           </button>
           <div className="app-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" 
-                stroke="currentColor" fill="white" strokeWidth="0" />
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" fill="white" strokeWidth="0" />
             </svg>
           </div>
           <span>Canadian Forces Travel Assistant</span>
         </div>
-        
         <div className="header-actions">
-          {/* Clear chat button - only show if conversation started */}
           {conversationStarted && (
-            <button
-              onClick={clearChat}
-              className="icon-button"
-              aria-label="Clear chat"
-              title="Clear chat"
-            >
+            <button onClick={clearChat} className="icon-button" aria-label="Clear chat" title="Clear chat">
               <ClearIcon />
             </button>
           )}
-          
-          {/* Avatar toggle button */}
-          <button
-            onClick={() => setShowAvatars(!showAvatars)}
+          <button onClick={() => setShowAvatars(!showAvatars)}
             className={`icon-button ${showAvatars ? 'active' : ''}`}
             aria-label={showAvatars ? 'Hide Avatars' : 'Show Avatars'}
             title={showAvatars ? 'Hide Avatars' : 'Show Avatars'}
-            aria-pressed={showAvatars}
-          >
+            aria-pressed={showAvatars}>
             <AvatarIcon />
           </button>
-          
-          {/* Theme toggle button */}
-          <button
-            onClick={toggleTheme}
-            className="icon-button"
+          <button onClick={toggleTheme} className="icon-button"
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
             <ThemeIcon isDark={theme === 'dark'} />
           </button>
         </div>
       </header>
 
-      {/* Chat window */}
-      <main className="messages-container">
-        <ModernChatWindow
-          messages={messages}
-          isLoading={isLoading}
-          isTyping={isTyping}
-          onCopyMessage={handleCopyMessage}
-          onShareMessage={handleShareMessage}
-          onSelectQuestion={handleSelectQuestion}
-          showAvatars={showAvatars}
-        />
-        
-        {/* Scroll to bottom button */}
-        {showScrollButton && (
-          <button 
-            className="scroll-bottom visible" 
-            onClick={scrollToBottom}
-            aria-label="Scroll to bottom"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        )}
-        
-        {/* Invisible div for scrolling to bottom */}
-        <div ref={messagesEndRef} />
-      </main>
-
-      {/* Chat input and controls */}
-      <div className="feature-controls">
-        <button
-          onClick={() => setIsSimplifyMode(!isSimplifyMode)}
-          className={`feature-toggle ${isSimplifyMode ? 'active' : ''}`}
-          aria-pressed={isSimplifyMode}
-          role="switch"
-          title={isSimplifyMode ? 'Turn off simplified responses' : 'Turn on simplified responses'}
-        >
-          <SimplifyIcon />
-          <span>{isSimplifyMode ? 'Simplified On' : 'Simplified Off'}</span>
-        </button>
+      {/* Chat Body */}
+      <div className="chat-body" ref={messagesContainerRef}>
+        <main className="messages-container">
+          {networkError && (
+            <div className="network-error-banner">
+              <ErrorIcon /> {networkError}
+              <button onClick={() => setNetworkError(null)} aria-label="Dismiss">
+                ×
+              </button>
+            </div>
+          )}
+          
+          <ImprovedChatWindow
+            messages={messages}
+            isLoading={isLoading}
+            isTyping={isTyping}
+            onCopyMessage={handleCopyMessage}
+            onShareMessage={handleShareMessage}
+            onSelectQuestion={handleSelectQuestion}
+            showAvatars={showAvatars}
+            fontSize={fontSize}
+            onRetryMessage={(messageId) => {
+              // Find the failed message and retry it
+              const failedMessage = messages.find(m => m.id === messageId);
+              if (failedMessage && failedMessage.sender === 'user') {
+                setInput(failedMessage.text);
+                // Remove the failed message and its error response
+                setMessages(prev => prev.filter(m => 
+                  m.id !== messageId && 
+                  !(m.sender === 'bot' && m.status === 'error' && 
+                    prev.findIndex(pm => pm.id === messageId) === prev.indexOf(m) - 1)
+                ));
+              }
+            }}
+          />
+          
+          {showScrollButton && (
+            <button 
+              className="scroll-bottom visible" 
+              onClick={() => scrollToBottom()}
+              aria-label="Scroll to bottom"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          )}
+          <div ref={messagesEndRef} />
+        </main>
       </div>
-      
+
+      {/* Fixed Input Area */}
       <div className="input-container">
         <ModernChatInput
           input={input}
@@ -374,10 +381,28 @@ const ModernChat: React.FC = () => {
           onTyping={onTyping}
           isLoading={isLoading}
           maxLength={500}
+          fontSize={fontSize}
+          onFontSizeChange={handleFontSizeChange}
+          networkError={!!networkError}
+          onRetry={() => {
+            setNetworkError(null);
+            handleSend();
+          }}
         />
       </div>
 
-      {/* Toast notification */}
+      {/* Additional Controls */}
+      <div className="feature-controls">
+        <button onClick={() => setIsSimplifyMode(!isSimplifyMode)}
+          className={`feature-toggle ${isSimplifyMode ? 'active' : ''}`}
+          aria-pressed={isSimplifyMode} role="switch"
+          title={isSimplifyMode ? 'Turn off simplified responses' : 'Turn on simplified responses'}>
+          <SimplifyIcon />
+          <span>{isSimplifyMode ? 'Simplified On' : 'Simplified Off'}</span>
+        </button>
+      </div>
+
+      {/* Toast Notification */}
       {showToast && (
         <div className="toast-container">
           <div className="toast">

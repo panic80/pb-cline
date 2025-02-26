@@ -1,8 +1,11 @@
 import React from 'react';
-import ModernChat from '../components/modern/ModernChat';
+import EliteChatAdapter from '../new-chat-interface/EliteChatAdapter';
 
+/**
+ * ModernChatPage using the new Elite Chat interface
+ */
 const ModernChatPage: React.FC = () => {
-  return <ModernChat />;
+  return <EliteChatAdapter />;
 };
 
 export default ModernChatPage;

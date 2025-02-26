@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import {
   QuestionMarkCircleIcon,
   DocumentTextIcon,
   WindowIcon,
@@ -11,6 +11,34 @@ import {
 } from '@heroicons/react/24/solid';
 
 export default function LandingPage() {
+  // Initialize theme from localStorage or system preference
+  const [theme, setTheme] = useState(() => {
+    const storedTheme = localStorage.getItem('elite-chat-theme');
+    if (storedTheme) return storedTheme;
+    
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  // Toggle between light and dark
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const newTheme = prev === 'light' ? 'dark' : 'light';
+      localStorage.setItem('elite-chat-theme', newTheme);
+      return newTheme;
+    });
+  };
+
+  // Update document when theme changes
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Force a repaint to ensure theme changes are applied immediately
+    document.documentElement.style.display = 'none';
+    document.documentElement.offsetHeight; // Trigger reflow
+    document.documentElement.style.display = '';
+  }, [theme]);
+
   useEffect(() => {
     // Preload the chat route for faster navigation
     const preloadChat = () => {
@@ -36,6 +64,28 @@ export default function LandingPage() {
       <div className="relative">
         <div className="transition-all duration-300">
           <div className="bg-[var(--background)] text-[var(--text)] pt-12 min-h-screen overflow-y-auto">
+            {/* Theme Toggle - Positioned more prominently */}
+            <div className="fixed top-4 right-4 z-50">
+              <button
+                onClick={toggleTheme}
+                className="flex items-center justify-center p-3 bg-[var(--card)] text-[var(--text)] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-[var(--primary)] hover:bg-[var(--background-secondary)] hover:scale-110"
+                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              >
+                {theme === 'light' ? (
+                  // Moon icon for light mode
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 14.12A7.78 7.78 0 019.88 4a7.78 7.78 0 002.9 15.1 7.78 7.78 0 007.22-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  // Sun icon for dark mode
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
+                    <path d="M12 2v2m0 16v2M2 12h2m16 0h2m-3-7l-1.5 1.5M4.93 4.93l1.5 1.5m11.14 11.14l1.5 1.5M4.93 19.07l1.5-1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            
             {/* Hero Section */}
             <main className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
               <div className="w-full max-w-4xl mx-auto text-center">
