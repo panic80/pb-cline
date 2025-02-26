@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   QuestionMarkCircleIcon,
@@ -54,6 +54,51 @@ export default function LandingPage() {
   const [showModal, setShowModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [showSOPSubmodal, setShowSOPSubmodal] = useState(false);
+  const [showOnboardingSubmodal, setShowOnboardingSubmodal] = useState(false);
+  
+  // Refs for submodals to detect clicks outside
+  const sopSubmodalRef = useRef(null);
+  const onboardingSubmodalRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Handle clicks outside submodals
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if SOP submodal is open and click is outside
+      if (showSOPSubmodal &&
+          sopSubmodalRef.current &&
+          !sopSubmodalRef.current.contains(event.target) &&
+          !event.target.closest('[data-sop-trigger="true"]')) {
+        setShowSOPSubmodal(false);
+      }
+      
+      // Check if Onboarding submodal is open and click is outside
+      if (showOnboardingSubmodal &&
+          onboardingSubmodalRef.current &&
+          !onboardingSubmodalRef.current.contains(event.target) &&
+          !event.target.closest('[data-onboarding-trigger="true"]')) {
+        setShowOnboardingSubmodal(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Cleanup function
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSOPSubmodal, showOnboardingSubmodal]);
 
   const handleAboutClick = (e) => {
     e.preventDefault();
@@ -165,33 +210,67 @@ export default function LandingPage() {
             {/* Footer */}
             <footer className="px-4 sm:px-6 lg:px-8 border-t border-[var(--border)]" role="contentinfo">
               <div className="max-w-5xl mx-auto h-full flex flex-col justify-center">
-                <nav className="flex flex-wrap justify-center gap-6 sm:gap-8 mb-8" aria-label="Footer Navigation">
-                  <a
-                    href="#"
-                    onClick={handleAboutClick}
-                    className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
-                  >
-                    <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
-                    <span>About</span>
-                  </a>
-                  <a
-                    href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
-                    className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
-                  >
-                    <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
-                    <span>Contact</span>
-                  </a>
-                  <div
-                    onClick={() => setShowPrivacyModal(true)}
-                    className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
-                  >
-                    <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
-                    <span>Privacy Policy</span>
+                {/* Mobile-optimized footer content */}
+                <div className="md:hidden">
+                  <nav className="flex justify-around my-2" aria-label="Footer Navigation">
+                    <a
+                      href="#"
+                      onClick={handleAboutClick}
+                      className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                    >
+                      <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
+                      <span className="text-xs mt-1">About</span>
+                    </a>
+                    <a
+                      href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
+                      className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                    >
+                      <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
+                      <span className="text-xs mt-1">Contact</span>
+                    </a>
+                    <div
+                      onClick={() => setShowPrivacyModal(true)}
+                      className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
+                    >
+                      <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
+                      <span className="text-xs mt-1">Privacy</span>
+                    </div>
+                  </nav>
+                  <div className="text-center text-xs text-[var(--text)] opacity-50 mt-1">
+                    <p>© {new Date().getFullYear()} G8 Administration Hub</p>
                   </div>
-                </nav>
-                <div className="flex justify-between items-center text-sm text-[var(--text)] opacity-50">
-                  <p>© {new Date().getFullYear()} G8 Administration Hub. All rights reserved. Not affiliated with DND or CAF.</p>
-                  <p>Last updated: February 26, 2025</p>
+                </div>
+                
+                {/* Desktop footer content */}
+                <div className="hidden md:block">
+                  <nav className="flex flex-wrap justify-center gap-6 sm:gap-8 mb-8" aria-label="Footer Navigation">
+                    <a
+                      href="#"
+                      onClick={handleAboutClick}
+                      className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                    >
+                      <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
+                      <span>About</span>
+                    </a>
+                    <a
+                      href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
+                      className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                    >
+                      <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
+                      <span>Contact</span>
+                    </a>
+                    <div
+                      onClick={() => setShowPrivacyModal(true)}
+                      className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
+                    >
+                      <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
+                      <span>Privacy Policy</span>
+                    </div>
+                  </nav>
+                  <div className="flex justify-between items-center text-sm text-[var(--text)] opacity-50">
+                    <p>© {new Date().getFullYear()} G8 Administration Hub. All rights reserved. Not affiliated with DND or CAF.</p>
+                    <p>Last updated: February 26, 2025</p>
+                  </div>
                 </div>
               </div>
             </footer>
@@ -255,7 +334,11 @@ export default function LandingPage() {
                     </a>
                   </li>
                   <li className="py-3 relative group/item">
-                    <div className="flex items-center p-3 rounded-lg hover:bg-[var(--background-secondary)] transition-all duration-200 group cursor-pointer">
+                    <div
+                      className="flex items-center p-3 rounded-lg hover:bg-[var(--background-secondary)] transition-all duration-200 group cursor-pointer"
+                      onClick={() => setShowSOPSubmodal(true)}
+                      data-sop-trigger="true"
+                    >
                       <div className="p-2 rounded-lg bg-[var(--background-secondary)] group-hover:bg-[var(--primary)] transition-colors">
                         <DocumentTextIcon className="w-6 h-6 text-[var(--primary)] group-hover:text-white" />
                       </div>
@@ -267,25 +350,65 @@ export default function LandingPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
-                    <div className="absolute top-0 left-[calc(100%-100px)] w-72 bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none group-hover/item:pointer-events-auto" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none', zIndex: 100 }}>
-                      <div className="p-4 hover:bg-[var(--background-secondary)] rounded-xl transition-colors duration-200" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
-                        <h3 className="text-lg font-semibold mb-2">Standard Operating Procedures</h3>
-                        <ul className="divide-y divide-[var(--border)]">
-                          <li className="py-2">
-                            <a href="https://scribehow.com/embed-preview/Boots_Reimbursement_Submission_in_SCIP__oWwTYHb2QUeKqvtYJ3DMkg?as=video" target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:bg-[var(--background-secondary)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">How to Submit Boot Claims</a>
-                          </li>
-                          <li className="py-2">
-                            <a href="https://scribehow.com/embed-preview/Initiating_TD_Claim_in_SCIP__GGXSDQBnSNq6H5GX_cZUuQ?as=video" target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:bg-[var(--background-secondary)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">How to Submit TD Claims</a>
-                          </li>
-                          <li className="py-2">
-                            <a href="https://scribehow.com/embed-preview/Finalizing_a_TD_Claim_in_SCIP__w_JFn6AuTA--OpCHeFqYxA?as=video" target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:bg-[var(--background-secondary)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">How to Finalize TD Claims</a>
-                          </li>
-                        </ul>
+                    <div
+                      ref={sopSubmodalRef}
+                      className={`absolute top-0 md:w-72 w-full bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl transition-all duration-300 ${showSOPSubmodal ? 'visible opacity-100 pointer-events-auto' : 'invisible opacity-0 pointer-events-none'}`}
+                      style={{
+                        backdropFilter: 'none',
+                        WebkitBackdropFilter: 'none',
+                        zIndex: 100,
+                        left: windowWidth < 768 ? '0' : 'calc(100% - 100px)',
+                        maxHeight: windowWidth < 768 ? '60vh' : 'none',
+                        overflowY: windowWidth < 768 ? 'auto' : 'visible'
+                      }}>
+                      <div className="bg-[var(--background-secondary)] rounded-xl" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+                        <div className="p-4 border-b border-[var(--border)]">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-semibold">Standard Operating Procedures</h3>
+                            <button
+                              className="p-2 hover:bg-[var(--background)] rounded-full transition-colors"
+                              aria-label="Close submenu"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowSOPSubmodal(false);
+                              }}
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <ul className="divide-y divide-[var(--border)]">
+                            <li className="py-2">
+                              <a href="https://scribehow.com/embed-preview/Boots_Reimbursement_Submission_in_SCIP__oWwTYHb2QUeKqvtYJ3DMkg?as=video" target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:bg-[var(--background)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">How to Submit Boot Claims</a>
+                            </li>
+                            <li className="py-2">
+                              <a href="https://scribehow.com/embed-preview/Initiating_TD_Claim_in_SCIP__GGXSDQBnSNq6H5GX_cZUuQ?as=video" target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:bg-[var(--background)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">How to Submit TD Claims</a>
+                            </li>
+                            <li className="py-2">
+                              <a href="https://scribehow.com/embed-preview/Finalizing_a_TD_Claim_in_SCIP__w_JFn6AuTA--OpCHeFqYxA?as=video" target="_blank" rel="noopener noreferrer" className="block cursor-pointer hover:bg-[var(--background)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">How to Finalize TD Claims</a>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 border-t border-[var(--border)]">
+                          <button
+                            onClick={() => setShowSOPSubmodal(false)}
+                            className="w-full px-4 py-2 text-center text-[var(--text)] bg-[var(--card)] hover:bg-[var(--primary)] hover:text-white rounded-lg transition-colors duration-200"
+                          >
+                            Close
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </li>
                   <li className="py-3 last:pb-0 relative group/item">
-                    <div className="flex items-center p-3 rounded-lg hover:bg-[var(--background-secondary)] transition-all duration-200 group cursor-pointer">
+                    <div
+                      className="flex items-center p-3 rounded-lg hover:bg-[var(--background-secondary)] transition-all duration-200 group cursor-pointer"
+                      onClick={() => setShowOnboardingSubmodal(true)}
+                      data-onboarding-trigger="true"
+                    >
                       <div className="flex items-center">
                         <div className="p-2 rounded-lg bg-[var(--background-secondary)] group-hover:bg-[var(--primary)] transition-colors">
                           <BuildingLibraryIcon className="w-6 h-6 text-[var(--primary)] group-hover:text-white" />
@@ -299,17 +422,58 @@ export default function LandingPage() {
                         </svg>
                       </div>
                     </div>
-                    <div className="absolute top-0 left-[calc(100%-100px)] w-72 bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none group-hover/item:pointer-events-auto" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none', zIndex: 100 }}>
-                      <div className="p-4 hover:bg-[var(--background-secondary)] rounded-xl transition-colors duration-200" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
-                        <h3 className="text-lg font-semibold mb-2">Other Resources</h3>
-                        <ul className="divide-y divide-[var(--border)]">
-                          <li className="py-2">
-                            <a href="https://scribehow.com/embed-preview/SCIP_Mobile_Onboarding__qa62L6ezQi2nTzcp3nqq1Q?as=video" className="block cursor-pointer hover:bg-[var(--background-secondary)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">SCIP Mobile Onboarding Guide</a>
-                          </li>
-                          <li className="py-2">
-                            {/* <a href="/scip-desktop" className="block cursor-pointer hover:bg-[var(--background-secondary)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">SCIP Desktop Onboarding Guide</a> */}
-                          </li>
-                        </ul>
+                    <div
+                      ref={onboardingSubmodalRef}
+                      className={`absolute top-0 md:w-72 w-full bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl transition-all duration-300 ${showOnboardingSubmodal ? 'visible opacity-100 pointer-events-auto' : 'invisible opacity-0 pointer-events-none'}`}
+                      style={{
+                        backdropFilter: 'none',
+                        WebkitBackdropFilter: 'none',
+                        zIndex: 100,
+                        left: windowWidth < 768 ? '0' : 'calc(100% - 100px)',
+                        maxHeight: windowWidth < 768 ? '60vh' : 'none',
+                        overflowY: windowWidth < 768 ? 'auto' : 'visible'
+                      }}>
+                      <div className="bg-[var(--background-secondary)] rounded-xl" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+                        <div className="p-4 border-b border-[var(--border)]">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-semibold">Other Resources</h3>
+                            <button
+                              className="p-2 hover:bg-[var(--background)] rounded-full transition-colors cursor-pointer"
+                              aria-label="Close submenu"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setShowOnboardingSubmodal(false);
+                              }}
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <ul className="divide-y divide-[var(--border)]">
+                            <li className="py-2">
+                              <a href="https://scribehow.com/embed-preview/SCIP_Mobile_Onboarding__qa62L6ezQi2nTzcp3nqq1Q?as=video" className="block cursor-pointer hover:bg-[var(--background)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">SCIP Mobile Onboarding Guide</a>
+                             </li>
+                             <li className="py-2">
+                               {/* <a href="/scip-desktop" className="block cursor-pointer hover:bg-[var(--background)] hover:text-[var(--primary)] transition-colors duration-200 rounded px-2">SCIP Desktop Onboarding Guide</a> */}
+                             </li>
+                           </ul>
+                         </div>
+                        <div className="p-4 border-t border-[var(--border)]">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setShowOnboardingSubmodal(false);
+                            }}
+                            className="w-full px-4 py-2 text-center text-[var(--text)] bg-[var(--card)] hover:bg-[var(--primary)] hover:text-white rounded-lg transition-colors duration-200"
+                          >
+                            Close
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </li>
