@@ -102,13 +102,17 @@
 }
 
 .scroll-to-bottom:hover {
-  background-color: var(--color-bg-secondary);
+  background-color: var(--color-accent-hover);
   color: var(--color-text-primary);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent-hover);
+  transition: all var(--transition-normal);
 }
 
 .scroll-to-bottom:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+  box-shadow: var(--shadow-md);
 }
 
 .scroll-to-bottom svg {

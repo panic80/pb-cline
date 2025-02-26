@@ -9,6 +9,7 @@ import {
   EnvelopeIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/solid';
+import '../styles/sticky-footer.css'; // Import the sticky footer CSS
 
 export default function LandingPage() {
   // Initialize theme from localStorage or system preference
@@ -61,9 +62,9 @@ export default function LandingPage() {
 
   return (
     <>
-      <div className="relative">
-        <div className="transition-all duration-300">
-          <div className="bg-[var(--background)] text-[var(--text)] pt-12 min-h-screen overflow-y-auto">
+      <div className="relative flex flex-col min-h-screen">
+        <div className="flex-grow transition-all duration-300">
+          <div className="bg-[var(--background)] text-[var(--text)] pt-12 overflow-y-auto">
             {/* Theme Toggle - Positioned more prominently */}
             <div className="fixed top-4 right-4 z-50">
               <button
@@ -92,12 +93,12 @@ export default function LandingPage() {
                 <div className="mb-10 flex justify-center">
                   <BuildingLibraryIcon className="w-24 h-24 text-[var(--primary)]" aria-hidden="true" />
                 </div>
-                <h1 className="text-4xl md:text-6xl font-light mb-4 animate-fade-in" role="heading" aria-level="1">
-                  Welcome to 32 CBG G8 Homepage
-                  <span className="block text-xl md:text-2xl mt-4 text-[var(--text-secondary)]">Unofficial</span>
+                <h1 className="text-4xl md:text-6xl font-semibold mb-4 animate-fade-in" role="heading" aria-level="1">
+                  32 CBG G8 Administration Hub
+                  <span className="block text-xl md:text-2xl mt-4 text-[var(--text-secondary)] font-normal">Streamlined Military Administration Portal</span>
                 </h1>
                 <p className="text-xl text-center max-w-2xl mx-auto mt-6 mb-8 text-[var(--text)] opacity-80">
-                  Your comprehensive guide to policy information, submit claims and contact.
+                  Your comprehensive digital gateway to administrative resources, claims processing, and policy information. Designed to simplify and expedite your administrative tasks.
                 </p>
               </div>
             </main>
@@ -107,7 +108,7 @@ export default function LandingPage() {
               <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
                 <Link
                   to="/chat"
-                  className="p-4 rounded-lg bg-[var(--card)] transform transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:border-2 hover:border-blue-500 cursor-pointer"
+                  className="p-4 rounded-lg bg-[var(--card)] transform transition-all duration-300 hover:scale-115 hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] hover:border-4 hover:border-blue-500 cursor-pointer"
                   aria-label="Access Policy Chat Beta"
                 >
                   <div className="flex flex-col items-center text-center">
@@ -115,10 +116,10 @@ export default function LandingPage() {
                       <QuestionMarkCircleIcon className="w-12 h-12 text-[var(--primary)]" aria-hidden="true" />
                     </div>
                     <h3 className="text-xl font-medium mb-3 text-[var(--text)]">
-                      Policy Chatbot
+                      Policy Assistant
                     </h3>
                     <p className="text-[var(--text)] opacity-80">
-                      Get immediate responses to your policy-related questions. <span className="text-red-500">(Beta, in development, use at own discretion)</span>
+                      Interactive AI-powered guide for policy inquiries and administrative procedures. <span className="text-amber-500">(Beta)</span>
                     </p>
                   </div>
                 </Link>
@@ -126,7 +127,7 @@ export default function LandingPage() {
                   href="https://apps.powerapps.com/play/e/default-325b4494-1587-40d5-bb31-8b660b7f1038/a/75e3789b-9c1d-4feb-9515-20665ab7d6e8?tenantId=325b4494-1587-40d5-bb31-8b660b7f1038&amp;hint=c63b9850-8dc3-44f2-a186-f215cf7de716&amp;sourcetime=1738854913080"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-4 rounded-lg bg-[var(--card)] transform transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:border-2 hover:border-blue-500 cursor-pointer"
+                  className="p-4 rounded-lg bg-[var(--card)] transform transition-all duration-300 hover:scale-115 hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] hover:border-4 hover:border-blue-500 cursor-pointer"
                   aria-label="Access SCIP Platform"
                 >
                   <div className="flex flex-col items-center text-center">
@@ -134,16 +135,16 @@ export default function LandingPage() {
                       <DocumentTextIcon className="w-12 h-12 text-[var(--primary)]" aria-hidden="true" />
                     </div>
                     <h3 className="text-xl font-medium mb-3 text-[var(--text)]">
-                      Streamlined Claims Interface Platform (SCIP)
+                      SCIP Portal
                     </h3>
                     <p className="text-[var(--text)] opacity-80">
-                      A Power App enabling digital submission of claims.
+                      Streamlined Claims Interface Platform for efficient digital submission and processing of administrative claims.
                     </p>
                   </div>
                 </a>
                 <div
                   onClick={() => setShowModal(true)}
-                  className="p-4 rounded-lg bg-[var(--card)] transform transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:border-2 hover:border-blue-500 cursor-pointer"
+                  className="p-4 rounded-lg bg-[var(--card)] transform transition-all duration-300 hover:scale-115 hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] hover:border-4 hover:border-blue-500 cursor-pointer"
                   aria-label="Open Other Tools"
                 >
                   <div className="flex flex-col items-center text-center">
@@ -151,10 +152,10 @@ export default function LandingPage() {
                       <WindowIcon className="w-12 h-12 text-[var(--primary)]" aria-hidden="true" />
                     </div>
                     <h3 className="text-xl font-medium mb-3 text-[var(--text)]">
-                      Other Tools
+                      Administrative Tools
                     </h3>
                     <p className="text-[var(--text)] opacity-80">
-                      Kiosk Manager, SOP, etc
+                      Essential resources including Kiosk Manager, SOPs, and operational guidelines.
                     </p>
                   </div>
                 </div>
@@ -162,8 +163,8 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-[var(--border)]" role="contentinfo">
-              <div className="max-w-5xl mx-auto">
+            <footer className="px-4 sm:px-6 lg:px-8 border-t border-[var(--border)]" role="contentinfo">
+              <div className="max-w-5xl mx-auto h-full flex flex-col justify-center">
                 <nav className="flex flex-wrap justify-center gap-6 sm:gap-8 mb-8" aria-label="Footer Navigation">
                   <a
                     href="#"
@@ -188,9 +189,10 @@ export default function LandingPage() {
                     <span>Privacy Policy</span>
                   </div>
                 </nav>
-                <p className="text-center text-sm text-[var(--text)] opacity-50">
-                  © {new Date().getFullYear()} Policy Assistant. Your data is handled responsibly.
-                </p>
+                <div className="flex justify-between items-center text-sm text-[var(--text)] opacity-50">
+                  <p>© {new Date().getFullYear()} G8 Administration Hub. All rights reserved. Not affiliated with DND or CAF.</p>
+                  <p>Last updated: February 26, 2025</p>
+                </div>
               </div>
             </footer>
           </div>

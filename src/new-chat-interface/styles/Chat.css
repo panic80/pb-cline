@@ -176,13 +176,16 @@ body {
 }
 
 .action-button:hover {
-  background-color: var(--color-bg-tertiary);
+  background-color: var(--color-accent-hover);
   color: var(--color-text-primary);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
 }
 
 .action-button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-button svg {

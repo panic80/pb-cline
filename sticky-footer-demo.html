@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky Footer Demo</title>
+  <style>
+    /* Variables to match the React app */
+    :root {
+      --background: #f8f9fa;
+      --text: #212529;
+      --border: #dee2e6;
+      --card: #ffffff;
+      --primary: #0d6efd;
+      --background-secondary: #e9ecef;
+      --text-secondary: #6c757d;
+    }
+    
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #1e2124;
+        --text: #e9ecef;
+        --border: #495057;
+        --card: #2c3034;
+        --primary: #3b82f6;
+        --background-secondary: #343a40;
+        --text-secondary: #adb5bd;
+      }
+    }
+
+    /* Base styles */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background-color: var(--background);
+      line-height: 1.5;
+    }
+    
+    button {
+      cursor: pointer;
+      padding: 8px 16px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .content-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Demo controls */
+    .controls {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: var(--card);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Demo content */
+    .demo-content {
+      padding: 20px;
+      background-color: var(--card);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Import the sticky footer CSS */
+    /* First, completely isolate the footer from document flow */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* Prevent horizontal scrolling */
+    }
+
+    /* Create an absolutely positioned pseudo-element for the footer */
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw; /* Use viewport width to avoid scrollbar issues */
+      height: 80px; /* Match your footer height */
+      background-color: var(--background);
+      border-top: 1px solid var(--border);
+      z-index: 1000;
+      pointer-events: none; /* Allow clicks to pass through to the real footer */
+    }
+
+    /* Make the actual footer transparent but keep it in the document for semantics/accessibility */
+    footer {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto; /* Enable interaction */
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 80px !important;
+      z-index: 1001 !important; /* Above the pseudo-element */
+      background: transparent !important; /* Let the pseudo-element show through */
+      border-top: none !important; /* Remove border as it's on the pseudo-element */
+      
+      /* Critical styles to prevent ANY movement */
+      transform: translateZ(0) !important; /* Force a compositing layer */
+      will-change: transform !important; /* Hint for browser optimization */
+      transition: none !important;
+      animation: none !important;
+      
+      /* Prevent interaction with document flow */
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Ensure the main content area has appropriate padding */
+    .relative.flex.flex-col.min-h-screen {
+      padding-bottom: 80px !important;
+    }
+
+    /* Structure similar to the React app */
+    .relative.flex.flex-col.min-h-screen {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .flex-grow {
+      flex-grow: 1;
+    }
+    
+    /* Footer styling for the demo */
+    footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+    }
+    
+    footer .footer-content {
+      max-width: 800px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    
+    /* For the demo - to test content changes */
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="relative flex flex-col min-h-screen">
+    <div class="flex-grow">
+      <div class="content-container">
+        <h1>Sticky Footer Demo</h1>
+        
+        <div class="controls">
+          <h2>Test Controls</h2>
+          <p>Use these buttons to test how the footer behaves when content changes:</p>
+          <button onclick="toggleContent()">Toggle Content</button>
+          <button onclick="addMoreContent()">Add More Content</button>
+          <button onclick="removeAllContent()">Remove All Content</button>
+        </div>
+        
+        <div id="main-content">
+          <div class="demo-content">
+            <h2>Short Content</h2>
+            <p>This page has minimal content to demonstrate how the footer stays at the bottom of the viewport.</p>
+          </div>
+        </div>
+        
+        <div id="extra-content" class="hidden">
+          <div class="demo-content">
+            <h2>Additional Content</h2>
+            <p>This is additional content that will push the page beyond the viewport height.</p>
+            <p>The footer should remain fixed at the bottom of the viewport as you scroll.</p>
+          </div>
+        </div>
+        
+        <div id="long-content" class="hidden">
+          <!-- Will be filled by JavaScript -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer role="contentinfo">
+      <div class="footer-content">
+        <div>© 2025 Sticky Footer Demo</div>
+        <div>Last updated: February 26, 2025</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Toggle the visibility of the extra content
+    function toggleContent() {
+      const extraContent = document.getElementById('extra-content');
+      extraContent.classList.toggle('hidden');
+    }
+    
+    // Add a lot of paragraphs to push content beyond viewport
+    function addMoreContent() {
+      const longContent = document.getElementById('long-content');
+      longContent.classList.remove('hidden');
+      
+      // Clear existing content
+      longContent.innerHTML = '';
+      
+      // Add a demo content div
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'demo-content';
+      
+      // Add a heading
+      const heading = document.createElement('h2');
+      heading.textContent = 'Long Content';
+      contentDiv.appendChild(heading);
+      
+      // Add many paragraphs
+      for (let i = 0; i < 20; i++) {
+        const para = document.createElement('p');
+        para.textContent = `This is paragraph ${i+1} of the long content section. This content forces the page to scroll, testing how the footer behaves with scrollable content.`;
+        contentDiv.appendChild(para);
+      }
+      
+      longContent.appendChild(contentDiv);
+    }
+    
+    // Remove all extra content
+    function removeAllContent() {
+      document.getElementById('extra-content').classList.add('hidden');
+      document.getElementById('long-content').classList.add('hidden');
+      document.getElementById('long-content').innerHTML = '';
+    }
+  </script>
+</body>
+</html>

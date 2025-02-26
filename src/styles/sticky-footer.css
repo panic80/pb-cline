@@ -1,0 +1,106 @@
+/* Sticky Footer Implementation - Prevents any shifting */
+
+/* First, completely isolate the footer from document flow */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Create an absolutely positioned pseudo-element for the footer */
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw; /* Use viewport width to avoid scrollbar issues */
+  height: 160px; /* Match your footer height */
+  background-color: var(--background);
+  border-top: 1px solid var(--border);
+  z-index: 1000;
+  pointer-events: none; /* Allow clicks to pass through to the real footer */
+}
+
+/* Make the actual footer transparent but keep it in the document for semantics/accessibility */
+footer {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto; /* Enable interaction */
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 160px !important;
+  z-index: 1001 !important; /* Above the pseudo-element */
+  background: transparent !important; /* Let the pseudo-element show through */
+  border-top: none !important; /* Remove border as it's on the pseudo-element */
+  
+  /* Critical styles to prevent ANY movement */
+  transform: translateZ(0) !important; /* Force a compositing layer */
+  will-change: transform !important; /* Hint for browser optimization */
+  transition: none !important;
+  animation: none !important;
+  
+  /* Prevent interaction with document flow */
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure the main content area has appropriate padding */
+.relative.flex.flex-col.min-h-screen {
+  padding-bottom: 160px !important;
+}
+
+/* Ensure modals and overlays continue to work */
+[class*="modal"], [class*="overlay"], [class*="backdrop"] {
+  z-index: 1100 !important; /* Above the footer */
+}
+
+/* Ensure the footer works in all browsers */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari */
+  body::after, footer {
+    /* Add additional iOS-specific fixes */
+    -webkit-transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+}
+
+/* Fix for browsers with non-standard viewport handling */
+@media screen and (min-width: 0\0) and (min-resolution: 0.001dpcm) {
+  /* IE9+ */
+  body::after, footer {
+    position: fixed !important;
+    bottom: 0 !important;
+  }
+}
+
+/* Prevent shifting from scrollbar appearance by always reserving space */
+html {
+  overflow-y: scroll !important; /* Always show scrollbar to prevent layout shifts */
+  scrollbar-width: thin !important; /* For Firefox */
+}
+
+/* Compensate for flexbox behavior */
+.flex-grow {
+  min-height: 0 !important; /* Prevent flex items from expanding beyond content */
+}
+
+/* Handle window resize events more gracefully */
+@media (max-width: 100vw) {
+  body::after, footer {
+    left: 0 !important;
+    width: 100vw !important;
+  }
+}
+
+/* Responsive adjustments for smaller screens */
+@media screen and (max-width: 768px) {
+  body::after, footer {
+    height: 140px !important;
+  }
+  
+  .relative.flex.flex-col.min-h-screen {
+    padding-bottom: 140px !important;
+  }
+}
