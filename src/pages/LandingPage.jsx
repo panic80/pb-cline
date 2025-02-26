@@ -202,7 +202,7 @@ export default function LandingPage() {
         <>
           {/* Backdrop overlay */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
+            className="fixed inset-0 bg-black/60 z-40 animate-fade-in"
             onClick={() => setShowModal(false)}
           />
           
@@ -267,8 +267,8 @@ export default function LandingPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
-                    <div className="absolute top-0 left-[calc(100%-100px)] w-72 bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl z-50 invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none group-hover/item:pointer-events-auto">
-                      <div className="p-4 hover:bg-[var(--background-secondary)] rounded-xl transition-colors duration-200">
+                    <div className="absolute top-0 left-[calc(100%-100px)] w-72 bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none group-hover/item:pointer-events-auto" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none', zIndex: 100 }}>
+                      <div className="p-4 hover:bg-[var(--background-secondary)] rounded-xl transition-colors duration-200" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
                         <h3 className="text-lg font-semibold mb-2">Standard Operating Procedures</h3>
                         <ul className="divide-y divide-[var(--border)]">
                           <li className="py-2">
@@ -299,8 +299,8 @@ export default function LandingPage() {
                         </svg>
                       </div>
                     </div>
-                    <div className="absolute top-0 left-[calc(100%-100px)] w-72 bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl z-50 invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none group-hover/item:pointer-events-auto">
-                      <div className="p-4 hover:bg-[var(--background-secondary)] rounded-xl transition-colors duration-200">
+                    <div className="absolute top-0 left-[calc(100%-100px)] w-72 bg-[var(--card)] text-[var(--text)] rounded-xl border border-[var(--border)] shadow-2xl invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none group-hover/item:pointer-events-auto" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none', zIndex: 100 }}>
+                      <div className="p-4 hover:bg-[var(--background-secondary)] rounded-xl transition-colors duration-200" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
                         <h3 className="text-lg font-semibold mb-2">Other Resources</h3>
                         <ul className="divide-y divide-[var(--border)]">
                           <li className="py-2">
@@ -334,7 +334,7 @@ export default function LandingPage() {
       {showPrivacyModal && (
         <>
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
+            className="fixed inset-0 bg-black/60 z-40 animate-fade-in"
             onClick={() => setShowPrivacyModal(false)}
           />
           
@@ -411,7 +411,7 @@ export default function LandingPage() {
       {showAboutModal && (
         <>
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in" 
+            className="fixed inset-0 bg-black/60 z-40 animate-fade-in" 
             onClick={() => setShowAboutModal(false)}
           />
           <div 
