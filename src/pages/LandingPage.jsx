@@ -107,9 +107,9 @@ export default function LandingPage() {
 
   return (
     <>
-      <div className="relative flex flex-col min-h-screen">
-        <div className="flex-grow transition-all duration-300">
-          <div className="bg-[var(--background)] text-[var(--text)] pt-12 overflow-y-auto">
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow">
+          <div className="bg-[var(--background)] text-[var(--text)] pt-12">
             {/* Theme Toggle - Positioned more prominently */}
             <div className="fixed top-4 right-4 z-50">
               <button
@@ -206,76 +206,76 @@ export default function LandingPage() {
                 </div>
               </div>
             </section>
-
-            {/* Footer */}
-            <footer className="px-4 sm:px-6 lg:px-8 border-t border-[var(--border)]" role="contentinfo">
-              <div className="max-w-5xl mx-auto h-full flex flex-col justify-center">
-                {/* Mobile-optimized footer content */}
-                <div className="md:hidden">
-                  <nav className="flex justify-around my-2" aria-label="Footer Navigation">
-                    <a
-                      href="#"
-                      onClick={handleAboutClick}
-                      className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
-                    >
-                      <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
-                      <span className="text-xs mt-1">About</span>
-                    </a>
-                    <a
-                      href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
-                      className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
-                    >
-                      <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
-                      <span className="text-xs mt-1">Contact</span>
-                    </a>
-                    <div
-                      onClick={() => setShowPrivacyModal(true)}
-                      className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
-                    >
-                      <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
-                      <span className="text-xs mt-1">Privacy</span>
-                    </div>
-                  </nav>
-                  <div className="text-center text-xs text-[var(--text)] opacity-50 mt-1">
-                    <p>© {new Date().getFullYear()} G8 Administration Hub</p>
-                  </div>
-                </div>
-                
-                {/* Desktop footer content */}
-                <div className="hidden md:block">
-                  <nav className="flex flex-wrap justify-center gap-6 sm:gap-8 mb-8" aria-label="Footer Navigation">
-                    <a
-                      href="#"
-                      onClick={handleAboutClick}
-                      className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
-                    >
-                      <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
-                      <span>About</span>
-                    </a>
-                    <a
-                      href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
-                      className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
-                    >
-                      <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
-                      <span>Contact</span>
-                    </a>
-                    <div
-                      onClick={() => setShowPrivacyModal(true)}
-                      className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
-                    >
-                      <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
-                      <span>Privacy Policy</span>
-                    </div>
-                  </nav>
-                  <div className="flex justify-between items-center text-sm text-[var(--text)] opacity-50">
-                    <p>© {new Date().getFullYear()} G8 Administration Hub. All rights reserved. Not affiliated with DND or CAF.</p>
-                    <p>Last updated: February 26, 2025</p>
-                  </div>
-                </div>
-              </div>
-            </footer>
           </div>
         </div>
+        
+        {/* Footer - Now as a standard element at the bottom of the page */}
+        <footer className="mt-auto px-4 sm:px-6 lg:px-8 border-t border-[var(--border)]" role="contentinfo">
+          <div className="max-w-5xl mx-auto py-6">
+            {/* Mobile-optimized footer content */}
+            <div className="md:hidden">
+              <nav className="flex justify-around my-2" aria-label="Footer Navigation">
+                <a
+                  href="#"
+                  onClick={handleAboutClick}
+                  className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                >
+                  <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
+                  <span className="text-xs mt-1">About</span>
+                </a>
+                <a
+                  href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
+                  className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                >
+                  <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
+                  <span className="text-xs mt-1">Contact</span>
+                </a>
+                <div
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="inline-flex flex-col items-center text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
+                >
+                  <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
+                  <span className="text-xs mt-1">Privacy</span>
+                </div>
+              </nav>
+              <div className="text-center text-xs text-[var(--text)] opacity-50 mt-1">
+                <p>© {new Date().getFullYear()} G8 Administration Hub</p>
+              </div>
+            </div>
+            
+            {/* Desktop footer content */}
+            <div className="hidden md:block">
+              <nav className="flex flex-wrap justify-center gap-6 sm:gap-8 mb-4" aria-label="Footer Navigation">
+                <a
+                  href="#"
+                  onClick={handleAboutClick}
+                  className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                >
+                  <InformationCircleIcon className="w-5 h-5" aria-hidden="true" />
+                  <span>About</span>
+                </a>
+                <a
+                  href="mailto:g8@sent.com?subject=Contacting%20from%20G8%20homepage"
+                  className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1"
+                >
+                  <EnvelopeIcon className="w-5 h-5" aria-hidden="true" />
+                  <span>Contact</span>
+                </a>
+                <div
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="inline-flex items-center space-x-2 text-[var(--text)] opacity-70 hover:opacity-100 hover:text-[var(--primary)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] rounded px-2 py-1 cursor-pointer"
+                >
+                  <ShieldCheckIcon className="w-5 h-5" aria-hidden="true" />
+                  <span>Privacy Policy</span>
+                </div>
+              </nav>
+              <div className="flex justify-between items-center text-sm text-[var(--text)] opacity-50">
+                <p>© {new Date().getFullYear()} G8 Administration Hub. All rights reserved. Not affiliated with DND or CAF.</p>
+                <p>Last updated: February 26, 2025</p>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
       {showModal && (
         <>
