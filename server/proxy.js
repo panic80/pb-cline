@@ -89,13 +89,13 @@ app.post('/api/gemini/generateContent', async (req, res) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     
     // Extract model name from request or use default
-    const modelName = req.body.model || "gemini-2.0-flash";
+    const modelName = req.body.model || "gemini-2.0-flash-lite-001";
     console.log(`Using model: ${modelName}`);
     
     const generationConfig = req.body.generationConfig || {
-      temperature: 0.2,
-      topP: 0.8,
-      topK: 40,
+      temperature: 0.1,
+      topP: 0.1,
+      topK: 1,
       maxOutputTokens: 2048
     };
     

@@ -97,10 +97,21 @@ html {
 /* Responsive adjustments for smaller screens */
 @media screen and (max-width: 768px) {
   body::after, footer {
-    height: 140px !important;
+    height: 100px !important;
   }
   
   .relative.flex.flex-col.min-h-screen {
-    padding-bottom: 140px !important;
+    padding-bottom: 100px !important;
+  }
+}
+
+/* Further reduction for very small screens */
+@media screen and (max-width: 480px) {
+  body::after, footer {
+    height: 80px !important;
+  }
+  
+  .relative.flex.flex-col.min-h-screen {
+    padding-bottom: 80px !important;
   }
 }

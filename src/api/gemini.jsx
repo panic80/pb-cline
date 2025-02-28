@@ -123,7 +123,7 @@ export const callGeminiViaSDK = async (message, isSimplified, model, instruction
 export const sendToGemini = async (
   message,
   isSimplified = false,
-  model = 'models/gemini-2.0-flash-001',
+  model = 'gemini-2.0-flash-lite-001',
   preloadedInstructions = null
 ) => {
   try {
