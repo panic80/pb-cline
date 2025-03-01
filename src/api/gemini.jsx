@@ -50,7 +50,7 @@ export const getGenerationConfig = () => ({
 export const callGeminiViaProxy = async (message, isSimplified, model, instructions) => {
   const promptText = createPrompt(message, isSimplified, instructions);
   
-  const modelName = model.includes('/') ? model.split('/')[1].replace('-001', '') : model;
+  const modelName = "model/google-2.0-flash";
   const requestBody = {
     model: modelName,
     prompt: promptText,
@@ -92,12 +92,18 @@ export const callGeminiViaSDK = async (message, isSimplified, model, instruction
   const genAI = new GoogleGenerativeAI(API_KEY);
   
   // Extract the model name from the format 'models/gemini-2.0-flash-001'
-  const modelName = model.includes('/') ? model.split('/')[1].replace('-001', '') : model;
+  const modelName = "model/google-2.0-flash";
   const genModel = genAI.getGenerativeModel({ model: modelName });
 
   // Prepare the prompt and config
   const prompt = createPrompt(message, isSimplified, instructions);
-  const generationConfig = getGenerationConfig();
+  // const generationConfig = getGenerationConfig();
+  const generationConfig = {
+    temperature: 0.1,
+    topP: 0.1,
+    topK: 1,
+    maxOutputTokens: 2048
+  };
 
   // Generate content using the SDK
   const result = await genModel.generateContent(prompt, generationConfig);
@@ -123,7 +129,7 @@ export const callGeminiViaSDK = async (message, isSimplified, model, instruction
 export const sendToGemini = async (
   message,
   isSimplified = false,
-  model = 'gemini-2.0-flash-lite-001',
+  model = 'gemini-2.0-flash',
   preloadedInstructions = null
 ) => {
   try {
@@ -133,17 +139,17 @@ export const sendToGemini = async (
     }
 
     // Check if we're in development or production
-    const isDevelopment = import.meta.env.DEV;
+    // const isDevelopment = import.meta.env.DEV;
     
-    if (isDevelopment) {
-      try {
-        // In development, try the proxy endpoint first
-        return await callGeminiViaProxy(message, isSimplified, model, preloadedInstructions);
-      } catch (proxyError) {
-        console.warn('Proxy API call failed, falling back to direct SDK:', proxyError);
-        // Fall back to direct SDK call
-      }
-    }
+    // if (isDevelopment) {
+    //   try {
+    //     // In development, try the proxy endpoint first
+    //     return await callGeminiViaProxy(message, isSimplified, model, preloadedInstructions);
+    //   } catch (proxyError) {
+    //     console.warn('Proxy API call failed, falling back to direct SDK:', proxyError);
+    //     // Fall back to direct SDK call
+    //   }
+    // }
 
     // Direct SDK call (used in production or as fallback in development)
     return await callGeminiViaSDK(message, isSimplified, model, preloadedInstructions);
