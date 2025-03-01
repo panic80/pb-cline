@@ -1,5 +1,5 @@
 /**
- * Elite Chat Interface - ChatWindow Component Styles
+ * ChatGPT-style Chat Interface - ChatWindow Component Styles
  */
 
 .chat-window-container {
@@ -7,13 +7,16 @@
   position: relative;
   background-color: var(--color-bg-primary);
   transition: background-color var(--transition-normal);
+  width: 100%;
+  max-width: var(--max-message-width);
+  margin: 0 auto;
 }
 
 /* Messages container */
 .chat-messages {
   height: 100%;
   overflow-y: auto;
-  padding: var(--container-padding);
+  padding: 0;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--color-text-tertiary) transparent;
@@ -40,7 +43,7 @@
 
 /* Message date group */
 .message-date-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 .message-date-group:last-child {
@@ -52,7 +55,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   position: relative;
 }
 
@@ -102,12 +105,10 @@
 }
 
 .scroll-to-bottom:hover {
-  background-color: var(--color-accent-hover);
+  background-color: var(--color-bg-secondary);
   color: var(--color-text-primary);
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--color-accent-hover);
-  transition: all var(--transition-normal);
 }
 
 .scroll-to-bottom:active {
@@ -120,28 +121,27 @@
   height: 20px;
 }
 
-/* Loading indicator */
+/* Loading indicator - ChatGPT style */
 .chat-loading-indicator {
   display: flex;
   justify-content: center;
   padding: 1rem 0;
   animation: fade-in 0.3s ease forwards;
+  width: 100%;
+  max-width: var(--max-message-width);
+  padding: 1rem var(--container-padding);
 }
 
 .typing-dots {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background-color: var(--color-assistant-bubble);
-  border: 1px solid var(--color-border);
-  border-radius: var(--chat-border-radius);
-  box-shadow: var(--shadow-sm);
+  padding: 0.5rem;
 }
 
 .typing-dots .dot {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background-color: var(--color-accent-primary);
   margin: 0 3px;
@@ -181,8 +181,8 @@
 }
 
 .empty-state-icon {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background-color: var(--color-bg-secondary);
   display: flex;
@@ -196,8 +196,8 @@
 }
 
 .empty-state-icon svg {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .chat-empty-state h2 {
@@ -238,13 +238,13 @@
 /* Responsive styling */
 @media (max-width: 640px) {
   .chat-messages {
-    padding: 0.75rem;
+    padding: 0;
   }
   
   .scroll-to-bottom {
-    bottom: 1rem;
-    right: 1rem;
-    width: 36px;
+      bottom: 4rem;
+      right: 1rem;
+      width: 36px;
     height: 36px;
   }
   
