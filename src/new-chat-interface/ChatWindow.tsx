@@ -7,18 +7,12 @@ import './styles/ChatWindow.css';
 export interface ChatWindowProps {
   messages: Message[];
   isLoading?: boolean;
-  showAvatars?: boolean;
-  onCopyMessage?: (content: string) => void;
-  onDeleteMessage?: (id: string) => void;
   className?: string;
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({
   messages,
   isLoading = false,
-  showAvatars = true,
-  onCopyMessage,
-  onDeleteMessage,
   className = '',
 }) => {
   const { theme } = useTheme();
@@ -38,9 +32,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const groups: { date: string; messages: Message[] }[] = [];
     let currentDate = '';
     let currentGroup: Message[] = [];
-    
-    // Debug log for messages array
-    console.log("Grouping messages:", messages);
     
     if (!messages || messages.length === 0) {
       return groups;
@@ -174,11 +165,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const messageGroups = groupMessagesByDate();
 
   return (
-    <div 
+    <div
       className={`chat-window-container ${className}`}
     >
-      <div 
-        className="chat-messages" 
+      <div
+        className="chat-messages"
         ref={chatContainerRef}
         onScroll={handleScroll}
       >
@@ -199,9 +190,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     isConsecutive={isConsecutiveMessage(
                       messages.indexOf(message)
                     )}
-                    showAvatar={showAvatars}
-                    onCopy={onCopyMessage}
-                    onDelete={onDeleteMessage}
                   />
                 ))}
               </div>
@@ -215,7 +203,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
       {/* Scroll to bottom button */}
       {showScrollButton && (
-        <button 
+        <button
           className="scroll-to-bottom"
           onClick={handleScrollToBottomClick}
           aria-label="Scroll to bottom"

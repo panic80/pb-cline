@@ -110,9 +110,40 @@
 }
 
 /* Support for both dark and light themes - class and attribute based */
+:root,
+[data-theme="dark"] {
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1e1e1e;
+  --color-bg-tertiary: #2d2d2d;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e0e0e0;
+  --color-text-tertiary: #a0a0a0;
+  --color-border: #333333;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-error: #e53e3e;
+  --color-success: #38a169;
+}
+
+[data-theme="light"] {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-tertiary: #e9ecef;
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-tertiary: #6c757d;
+  --color-border: #dee2e6;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-error: #dc2626;
+  --color-success: #059669;
+}
+
 :root.dark .simplify-button.active,
 [data-theme="dark"] .simplify-button.active {
   background-color: rgba(90, 103, 216, 0.25);
+}
+
+[data-theme="light"] .simplify-button.active {
+  background-color: rgba(92, 124, 250, 0.15);
 }
 
 /* Theme toggle styling */
